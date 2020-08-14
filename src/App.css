@@ -7,14 +7,39 @@
 background-color: white;
 }
 .app__header{
+position:sticky;
+top:0;
+z-index: 1;
 background-color:#fafafa;
 padding:20px;
 border-bottom: 1px solid lightgray;
 object-fit: contain;
-}
+display: flex;
+justify-content: space-between;
 
+
+}
+.app__headerImage{
+    object-fit: contain;
+}
 .app__signup{
  display: flex;
  flex-direction: column;
  text-align: center;
+}
+
+.app__posts{
+    padding:20px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    align-content: center;
+    
+}
+.app__postsRight{
+    margin-left: 20px;
+    display: flex;
+}
+.imageUpload__caption{
+    margin-bottom: 5px;
 }

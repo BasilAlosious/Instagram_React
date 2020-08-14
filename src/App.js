@@ -5,6 +5,9 @@ import {db,auth} from './firebase'
 import  Modal  from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button,Input } from '@material-ui/core';
+import ImageUpload from './components/ImageUpload/ImageUpload'
+import InstagramEmbed from 'react-instagram-embed';
+
 function getModalStyle() {
   const top = 50 
   const left = 50 
@@ -39,7 +42,7 @@ function App() {
 
   useEffect(() => {
     /* onSnapshot is a real time event listener that captures all the changes happening to collection and fires off*/
-  db.collection('posts').onSnapshot((snapshot) => (
+  db.collection('posts').orderBy('timestamp','desc').onSnapshot((snapshot) => (
   setPosts(snapshot.docs.map((doc) =>({
     id:doc.id, 
     post:doc.data()
@@ -81,6 +84,7 @@ function App() {
 
   return (
     <div className="App">
+    
     <Modal
     open={open}
     onClose={() => setOpen(false)}
@@ -154,7 +158,6 @@ function App() {
     src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
     alt="logo"    
     />
-    </div>
 
     { user ? (<Button onClick={() => auth.signOut()}>Log Out </Button>
     ):(
@@ -164,14 +167,45 @@ function App() {
       </div> 
       )    
   }
-    <h1>Instagram Clone</h1>
-
-    {
-      posts.map(({id,post}) =>(
-        <Post  key={id} username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
-      ))
-    }
     </div>
+
+    
+    <div className="app__posts">
+      <div className="app__postLeft">
+        { 
+          posts.map(({id,post}) =>(
+            <Post  key={id}  postId={id} user={user}username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
+          ))
+        } 
+     </div>
+        <div className="app__postRight">
+          <InstagramEmbed
+          url='https://www.instagram.com/p/CD1P8t2JgtG/'
+          maxWidth={320}
+          hideCaption={false}
+          containerTagName='div'
+          protocol=''
+          injectScript
+          onLoading={() => {}}
+          onSuccess={() => {}}
+          onAfterRender={() => {}}
+          onFailure={() => {}}
+          />
+        </div>
+       
+    </div>
+  
+    {
+      // the ? after user protects app from breaking . applies the condition only if user.displayName present . It is called optional chaining//
+      user?.displayName ? (
+        <ImageUpload username={user.displayName}/>
+      ):(
+        <h3>You Need to Login To Upload</h3>
+      )}
+
+    </div>
+
+    
   );
 }
 
