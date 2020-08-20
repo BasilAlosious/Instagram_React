@@ -3,11 +3,19 @@ import './Post.css'
 import {db} from '../../firebase'
 import Avatar from '@material-ui/core/Avatar'
 import firebase from 'firebase'
+import {ThemeProvider,createGlobalStyle} from 'styled-components'
 
-const Post = ({username,user,caption,imageUrl,postId}) => {
+const Post = ({username,user,caption,imageUrl,postId,theme}) => {
     const[comments,setComments]=useState([])
     const[comment,setComment]=useState('')
 
+    const GlobalStyle= createGlobalStyle`
+    body{
+      background-color:${props =>
+      props.theme.mode === 'dark' ? '#111':'#EEE'};
+      color: ${ props => props.theme.mode ==='dark' ? '#EEE':'#111'};    
+    }
+    `   
     useEffect(() => {
         let unsubscribe;
         if (postId) {
@@ -34,7 +42,10 @@ const Post = ({username,user,caption,imageUrl,postId}) => {
         setComment('')
       }
 return (
-        <div className="post">
+      <ThemeProvider theme={theme}>
+      <>
+      <GlobalStyle/>
+  <div className="post">
         <div className="post__header">
         <Avatar
         className="post__avatar"
@@ -75,8 +86,9 @@ return (
         >Post</button>
         </form>
        )}
-       
         </div>
+        </>
+      </ThemeProvider>        
     )
 }
 export default Post 

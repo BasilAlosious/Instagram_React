@@ -4,17 +4,22 @@ import Post from './components/Post/Post';
 import {db,auth} from './firebase'
 import { Button } from '@material-ui/core';
 import ImageUpload from './components/ImageUpload/ImageUpload'
-import InstagramEmbed from 'react-instagram-embed';
 import Modals from './components/Modals/Modals'
- 
+import {ThemeProvider,createGlobalStyle} from 'styled-components'
+import dark from './images/dark.jpg'
+import light from './images/light.jpg'
+import { IconButton } from '@material-ui/core';
+import Brightness7OutlinedIcon from '@material-ui/icons/Brightness7';
+import Brightness4OutlinedIcon from '@material-ui/icons/Brightness4Outlined';
 function App() {
- /* const classes = useStyles()
-  const [modalStyle] = useState(getModalStyle); */
+ 
   const[openSignIn,setOpenSignIn]=useState('')
   const [posts,setPosts]= useState([])
   const[open,setOpen] = useState(false)
   const[user, setUser]=useState(null)
+  const [theme,setTheme]=useState({mode:'light'})
 
+  
   useEffect(() => {
     /* onSnapshot is a real time event listener that captures all the changes happening to collection and fires off*/
   db.collection('posts').orderBy('timestamp','desc').onSnapshot((snapshot) => (
@@ -38,25 +43,47 @@ function App() {
     })  
   }, [user])
 
-  
+  const GlobalStyle= createGlobalStyle`
+  body{
+    background-color:${props =>
+    props.theme.mode === 'dark' ? '#111':'#EEE'};
+    color: ${ props => props.theme.mode ==='dark' ? '#EEE':'#111'};    
+  }
+  `
 
   return (
+    <ThemeProvider theme={theme}>
+    <>
+    <GlobalStyle/>
     <div className="App">
-    <Modals open={open} setOpen={setOpen} openSignIn={openSignIn} setOpenSignIn={setOpenSignIn}  />
+    <Modals open={open} setOpen={setOpen} openSignIn={openSignIn} setOpenSignIn={setOpenSignIn} theme={theme} />
 
     <div className="app__header">
-
+    { theme.mode==='dark' ?(
+      <IconButton>
+      <Brightness4OutlinedIcon fontSize='large' color='primary' onClick={e=>setTheme(theme.mode==='dark' ?{mode:'light'}:{mode:'dark'})}/>
+      </IconButton>
+    ):(
+      <IconButton>
+    <Brightness7OutlinedIcon fontSize='large' color='primary' onClick={e=>setTheme(theme.mode==='dark' ?{mode:'light'}:{mode:'dark'})}/>
+    </IconButton>
+    )
+     
+    
+    }
+    
+    
     <img
     className="app__headerImage"
-    src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png"
+    src={theme.mode==='dark' ? dark:light}
     alt="logo"    
     />
 
-    { user ? (<Button onClick={() => auth.signOut()}>Log Out </Button>
+    { user ? (<Button  color="primary" onClick={() => auth.signOut()}>Log Out </Button>
     ):(
       <div className="app__loginContainer">
-      <Button type="submit" onClick= {() => setOpen(true)}>Sign Up </Button>
-      <Button type="submit" onClick= {() => setOpenSignIn(true)}>Sign In </Button>
+      <Button  color="primary" type="submit" onClick= {() => setOpen(true)}>Sign Up </Button>
+      <Button  color="primary" type="submit" onClick= {() => setOpenSignIn(true)}>Sign In </Button>
       </div> 
       )    
   }
@@ -67,24 +94,11 @@ function App() {
       <div className="app__postLeft">
         { 
           posts.map(({id,post}) =>(
-            <Post  key={id}  postId={id} user={user}username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
+            <Post  theme={theme}key={id}  postId={id} user={user}username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
           ))
         } 
      </div>
-        <div className="app__postRight">
-          <InstagramEmbed
-          url='https://www.instagram.com/p/CD1P8t2JgtG/'
-          maxWidth={320}
-          hideCaption={false}
-          containerTagName='div'
-          protocol=''
-          injectScript
-          onLoading={() => {}}
-          onSuccess={() => {}}
-          onAfterRender={() => {}}
-          onFailure={() => {}}
-          />
-        </div>
+        
        
     </div>
   
@@ -97,8 +111,8 @@ function App() {
       )}
 
     </div>
-
-    
+    </>
+    </ThemeProvider>
   );
 }
 

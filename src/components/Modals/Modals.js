@@ -26,14 +26,14 @@ function getModalStyle() {
     },
   }));
    
-  
-  const Modals = ({open,setOpen,openSignIn,setOpenSignIn}) => {
+  const Modals = ({open,setOpen,openSignIn,setOpenSignIn,theme}) => {
     const classes = useStyles()
     const [modalStyle] = useState(getModalStyle);
     const[username,setUsername]= useState('')
     const[password,setPassword]=useState('')
      const[email,setEmail]=useState('')
      const signUp = (event) =>{
+    
 
         event.preventDefault()
         /* to create a user. Auth is firebase method */
@@ -52,6 +52,7 @@ function getModalStyle() {
         setOpen(false)
       } 
       return (
+          
           <div className="Modals">
           <Modal
           open={open}
@@ -119,6 +120,7 @@ function getModalStyle() {
               </div>
             </Modal>
           </div>
+          
       )
   }
   
